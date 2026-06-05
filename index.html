@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ReadsFreely RSS Reader — Hands-Free Auto-Scroll News</title>
+  <meta name="description" content="ReadsFreely is a minimalist RSS reader that auto-scrolls your news hands-free. Follow trusted global sources. Available on iOS and Android." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --fg: #0A0A0A;
+      --muted: #6B6B6B;
+      --border: #E8E8E8;
+      --bg: #FAFAFA;
+      --white: #FFFFFF;
+      --accent: #0A0A0A;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--white);
+      color: var(--fg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+    .nav-brand { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; }
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--fg);
+      color: var(--white);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      letter-spacing: 0.1px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 96px 32px 80px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 5px 14px;
+      border-radius: 40px;
+      margin-bottom: 28px;
+    }
+    .hero h1 {
+      font-size: clamp(40px, 6vw, 64px);
+      font-weight: 700;
+      letter-spacing: -2px;
+      line-height: 1.05;
+      margin-bottom: 24px;
+      color: var(--fg);
+    }
+    .hero p {
+      font-size: 19px;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto 40px;
+      line-height: 1.65;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--fg);
+      color: var(--white);
+      font-size: 15px;
+      font-weight: 500;
+      padding: 13px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--white);
+      color: var(--fg);
+      font-size: 15px;
+      font-weight: 500;
+      padding: 13px 28px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ── Features ── */
+    .features {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 32px;
+    }
+    .section-label {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 48px;
+      text-align: center;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .feature-card {
+      padding: 40px 36px;
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .feature-card:nth-child(3n) { border-right: none; }
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--bg);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+    .feature-card h3 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      letter-spacing: -0.2px;
+    }
+    .feature-card p {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── How it works ── */
+    .how {
+      background: var(--bg);
+      padding: 80px 32px;
+    }
+    .how-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .how h2 {
+      font-size: 34px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+    .how .lead {
+      font-size: 17px;
+      color: var(--muted);
+      margin-bottom: 56px;
+      line-height: 1.6;
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 32px;
+      text-align: left;
+    }
+    .step-num {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .step h4 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .step p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    /* ── Pricing ── */
+    .pricing {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 80px 32px;
+    }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 48px;
+    }
+    .plan {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 36px 32px;
+      background: var(--white);
+    }
+    .plan.featured {
+      border-color: var(--fg);
+      background: var(--fg);
+      color: var(--white);
+    }
+    .plan-name { font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; }
+    .plan.featured .plan-name { color: rgba(255,255,255,0.6); }
+    .plan-price { font-size: 34px; font-weight: 700; letter-spacing: -1px; margin-bottom: 4px; }
+    .plan-period { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+    .plan.featured .plan-period { color: rgba(255,255,255,0.5); }
+    .plan-sources { font-size: 15px; font-weight: 500; }
+    .plan.featured .plan-sources { color: rgba(255,255,255,0.85); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--fg); }
+    .footer-links { display: flex; gap: 24px; }
+
+    @media (max-width: 600px) {
+      nav { padding: 0 20px; }
+      .hero { padding: 64px 20px 60px; }
+      footer { padding: 32px 20px; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <span class="nav-brand">ReadsFreely RSS Reader</span>
+    <a href="https://apps.apple.com/app/readsfreely-rss-reader/id6774676108" class="nav-cta">
+      Download on the App Store
+    </a>
+  </nav>
+
+  <section class="hero">
+    <span class="hero-badge">RSS Reader for iOS &amp; Android</span>
+    <h1>Your news,<br>hands-free.</h1>
+    <p>ReadsFreely is a minimalist RSS reader that auto-scrolls your headlines for you. Add your feeds, set your speed, and stay informed without lifting a finger.</p>
+    <div class="hero-actions">
+      <a href="https://apps.apple.com/app/readsfreely-rss-reader/id6774676108" class="btn-primary">
+        Download Free
+      </a>
+      <a href="#features" class="btn-secondary">
+        See Features
+      </a>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="features" id="features">
+    <p class="section-label">Why ReadsFreely</p>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">↕</div>
+        <h3>Auto-Scroll</h3>
+        <p>Headlines scroll smoothly and continuously at the speed you choose. No tapping, no swiping — just reading.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">◎</div>
+        <h3>Hands-Free</h3>
+        <p>Set your phone on the desk or prop it up anywhere. ReadsFreely keeps the news moving while your hands stay free.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">◻</div>
+        <h3>Distraction-Free</h3>
+        <p>No ads, no algorithmic feeds, no noise. A clean, calm layout that puts the content first.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⊕</div>
+        <h3>Any RSS Feed</h3>
+        <p>Add any RSS-enabled website in seconds. Start with curated global sources — ST World, BBC News, CNBC World — then make it your own.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⟳</div>
+        <h3>Always Fresh</h3>
+        <p>Feeds refresh in the background so your stream is up to date every time you open the app.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">≡</div>
+        <h3>Source Filters</h3>
+        <p>Switch between sources instantly with a single tap. Focus on one feed or read everything at once.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="how">
+    <div class="how-inner">
+      <p class="section-label">How it works</p>
+      <h2>Up and running in seconds.</h2>
+      <p class="lead">ReadsFreely is designed to be effortless from the first launch. No accounts, no sign-up — just add your feeds and go.</p>
+      <div class="steps">
+        <div class="step">
+          <p class="step-num">01</p>
+          <h4>Add your RSS feeds</h4>
+          <p>Paste any RSS feed URL or choose from the built-in starter feeds covering world news, business, and more.</p>
+        </div>
+        <div class="step">
+          <p class="step-num">02</p>
+          <h4>Set your scroll speed</h4>
+          <p>Dial in the pace that feels right — from a slow, leisurely browse to a quick market scan.</p>
+        </div>
+        <div class="step">
+          <p class="step-num">03</p>
+          <h4>Read hands-free</h4>
+          <p>Put your phone down. The headlines keep coming. Tap to pause, tap Open to read the full story.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="pricing" id="pricing">
+    <p class="section-label" style="text-align:center">Plans</p>
+    <h2 style="font-size:34px;font-weight:700;letter-spacing:-1px;text-align:center;margin-bottom:8px">Start free. Upgrade when you're ready.</h2>
+    <p style="text-align:center;font-size:17px;color:var(--muted);margin-bottom:0">All core features included in every plan.</p>
+    <div class="pricing-grid">
+      <div class="plan">
+        <p class="plan-name">Free</p>
+        <p class="plan-price">$0</p>
+        <p class="plan-period">forever</p>
+        <p class="plan-sources">Up to 4 RSS sources</p>
+      </div>
+      <div class="plan featured">
+        <p class="plan-name">Standard</p>
+        <p class="plan-price">$0.99</p>
+        <p class="plan-period">per month</p>
+        <p class="plan-sources">Up to 20 RSS sources</p>
+      </div>
+      <div class="plan">
+        <p class="plan-name">Pro</p>
+        <p class="plan-price">$3.99</p>
+        <p class="plan-period">per month</p>
+        <p class="plan-sources">Up to 50 RSS sources</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <footer>
+    <span>© 2025 ReadsFreely RSS Reader</span>
+    <div class="footer-links">
+      <a href="https://tkosgary.github.io/readsfreely-privacy/">Privacy Policy</a>
+      <a href="https://apps.apple.com/app/readsfreely-rss-reader/id6774676108">App Store</a>
+    </div>
+  </footer>
+
+</body>
+</html>
